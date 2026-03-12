@@ -1,12 +1,17 @@
 import exifread
 from database.db_manager import DBManager
+from config import IMAGE_EXTENSIONS
 
 db = DBManager()
 
-def extract_metadata(image_path):
+def extract_metadata(path):
+
+    if not any(path.lower().endswith(ext) for ext in IMAGE_EXTENSIONS):
+        return
 
     try:
-        with open(image_path,'rb') as f:
+
+        with open(path,'rb') as f:
 
             tags = exifread.process_file(f)
 
@@ -14,7 +19,9 @@ def extract_metadata(image_path):
             timestamp = str(tags.get("EXIF DateTimeOriginal","Unknown"))
             gps = str(tags.get("GPS GPSLatitude","Unknown"))
 
-            db.insert_metadata((image_path,camera,timestamp,gps))
+            db.insert(
+            "INSERT INTO metadata(file,camera,timestamp,gps) VALUES(?,?,?,?)",
+            (path,camera,timestamp,gps))
 
     except:
         pass

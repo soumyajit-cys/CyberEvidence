@@ -1,15 +1,15 @@
-import hashlib
 import os
+import hashlib
 from database.db_manager import DBManager
 
 db = DBManager()
 
-def calculate_hash(filepath):
+def hash_file(path):
 
     sha256 = hashlib.sha256()
 
     try:
-        with open(filepath,"rb") as f:
+        with open(path,"rb") as f:
             while chunk := f.read(4096):
                 sha256.update(chunk)
 
@@ -19,24 +19,24 @@ def calculate_hash(filepath):
         return None
 
 
-def analyze_file(filepath):
+def analyze_file(path):
 
     try:
-        file_hash = calculate_hash(filepath)
 
-        file_size = os.path.getsize(filepath)
+        size = os.path.getsize(path)
+        modified = os.path.getmtime(path)
 
-        modified = os.path.getmtime(filepath)
+        file_hash = hash_file(path)
 
-        data = (
-            os.path.basename(filepath),
-            filepath,
+        db.insert(
+        "INSERT INTO files(name,path,hash,size,modified) VALUES(?,?,?,?,?)",
+        (
+            os.path.basename(path),
+            path,
             file_hash,
-            file_size,
+            size,
             str(modified)
-        )
-
-        db.insert_file(data)
+        ))
 
     except:
         pass

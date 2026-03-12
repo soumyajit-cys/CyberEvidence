@@ -3,15 +3,14 @@ from config import SCAN_DIRECTORIES
 
 def collect_files():
 
-    collected_files = []
+    files = []
 
     for directory in SCAN_DIRECTORIES:
 
-        for root, dirs, files in os.walk(directory):
+        for root, dirs, filenames in os.walk(directory):
 
-            for file in files:
+            for f in filenames:
+                path = os.path.join(root, f)
+                files.append(path)
 
-                path = os.path.join(root,file)
-                collected_files.append(path)
-
-    return collected_files
+    return files

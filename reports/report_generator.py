@@ -1,24 +1,24 @@
 import sqlite3
+from config import REPORT_FILE, DATABASE_PATH
 
 def generate_report():
 
-    conn = sqlite3.connect("database/evidence.db")
+    conn = sqlite3.connect(DATABASE_PATH)
 
-    files = conn.execute("SELECT * FROM files").fetchall()
+    files = conn.execute("SELECT * FROM files LIMIT 20").fetchall()
     logs = conn.execute("SELECT * FROM logs").fetchall()
     network = conn.execute("SELECT * FROM network").fetchall()
 
-    report = open("reports/forensic_report.html","w")
+    html = "<h1>Digital Forensics Investigation Report</h1>"
 
-    report.write("<h1>Digital Forensics Investigation Report</h1>")
+    html += "<h2>Files</h2>"
+    html += str(files)
 
-    report.write("<h2>File Analysis</h2>")
-    report.write(str(files))
+    html += "<h2>Logs</h2>"
+    html += str(logs)
 
-    report.write("<h2>Log Events</h2>")
-    report.write(str(logs))
+    html += "<h2>Network</h2>"
+    html += str(network)
 
-    report.write("<h2>Network Activity</h2>")
-    report.write(str(network))
-
-    report.close()
+    with open(REPORT_FILE,"w") as f:
+        f.write(html)

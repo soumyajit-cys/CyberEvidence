@@ -5,8 +5,10 @@ SCAN_DIRECTORIES = [
     "/etc"
 ]
 
+IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png"]
+
 DATABASE_PATH = "database/evidence.db"
 
 PCAP_FILE = "scans/network_capture.pcap"
 
-REPORT_PATH = "reports/forensic_report.html"
+REPORT_FILE = "reports/forensic_report.html"

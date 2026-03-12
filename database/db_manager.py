@@ -12,18 +12,18 @@ class DBManager:
 
         self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS files(
-            file_id INTEGER PRIMARY KEY,
-            file_name TEXT,
-            file_path TEXT,
-            file_hash TEXT,
-            file_size INTEGER,
-            modified_date TEXT
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            path TEXT,
+            hash TEXT,
+            size INTEGER,
+            modified TEXT
         )
         """)
 
         self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS logs(
-            event_id INTEGER PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             timestamp TEXT,
             event_type TEXT,
             source TEXT,
@@ -33,41 +33,29 @@ class DBManager:
 
         self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS network(
-            packet_id INTEGER PRIMARY KEY,
-            source_ip TEXT,
-            destination_ip TEXT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            src_ip TEXT,
+            dst_ip TEXT,
             protocol TEXT,
-            packet_length INTEGER
+            length INTEGER
         )
         """)
 
         self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS metadata(
-            file_name TEXT,
-            camera_model TEXT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            file TEXT,
+            camera TEXT,
             timestamp TEXT,
-            gps_location TEXT
+            gps TEXT
         )
         """)
 
         self.conn.commit()
 
-    def insert_file(self, data):
-        self.cursor.execute(
-        "INSERT INTO files(file_name,file_path,file_hash,file_size,modified_date) VALUES(?,?,?,?,?)", data)
+    def insert(self, query, data):
+        self.cursor.execute(query, data)
         self.conn.commit()
 
-    def insert_log(self,data):
-        self.cursor.execute(
-        "INSERT INTO logs(timestamp,event_type,source,description) VALUES(?,?,?,?)", data)
-        self.conn.commit()
-
-    def insert_network(self,data):
-        self.cursor.execute(
-        "INSERT INTO network(source_ip,destination_ip,protocol,packet_length) VALUES(?,?,?,?)", data)
-        self.conn.commit()
-
-    def insert_metadata(self,data):
-        self.cursor.execute(
-        "INSERT INTO metadata VALUES(?,?,?,?)", data)
-        self.conn.commit()
+    def fetch(self, query):
+        return self.cursor.execute(query).fetchall()

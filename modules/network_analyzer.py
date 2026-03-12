@@ -1,21 +1,27 @@
 from scapy.all import rdpcap
 from database.db_manager import DBManager
+from config import PCAP_FILE
 
 db = DBManager()
 
-def analyze_pcap(file):
+def analyze_pcap():
 
-    packets = rdpcap(file)
+    try:
 
-    for pkt in packets:
+        packets = rdpcap(PCAP_FILE)
 
-        try:
-            src = pkt[0][1].src
-            dst = pkt[0][1].dst
-            proto = pkt[0][1].name
-            length = len(pkt)
+        for pkt in packets:
 
-            db.insert_network((src,dst,proto,length))
+            if pkt.haslayer("IP"):
 
-        except:
-            continue
+                src = pkt["IP"].src
+                dst = pkt["IP"].dst
+                proto = pkt["IP"].proto
+                length = len(pkt)
+
+                db.insert(
+                "INSERT INTO network(src_ip,dst_ip,protocol,length) VALUES(?,?,?,?)",
+                (src,dst,str(proto),length))
+
+    except:
+        pass
